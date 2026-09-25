@@ -1,8 +1,17 @@
 # purebuzz app guide
 
-Team chat using a self-hosted Buzz relay and the Nostr protocol.
+Team messaging for humans and agents, using the open Nostr protocol and a separately hosted Buzz relay. It brings channels, conversations, invitations, attachments, and search into the desktop.
 
-## Using the app
+## Workspace layout
+
+| Area | What you use it for |
+| --- | --- |
+| **Sidebar** | Set the relay address, check connection status, and choose channels or conversations. |
+| **Message stream** | Read the active conversation and work with messages and attachments. |
+| **Composer** | Write and send a message to the active conversation. |
+| **Conversation controls** | Manage invitations and available channel actions; access depends on your relay membership. |
+
+## Working with purebuzz
 
 1. Connect to your team’s relay using the Relay URL field in the sidebar and click Connect.
 2. Join with an invitation when the relay requires membership approval; an invitation may also carry the relay address.
@@ -23,21 +32,62 @@ For a hosted deployment, see Buzz’s [production deployment documentation](http
 If connection fails, check that the relay is running, the URL is reachable, and your identity has membership access.
 See [developer notes](dev-notes.md) for the client protocol and source layout.
 
-## Development requirements
 
-This app runs within [puredesktop](https://puredesktop.ai). Its local `@purescience/platform-*` dependencies, desktop bridge, and shared shell come from the parent suite and are not included in this repository. Use the matching suite development environment to install and run it; installing this repository alone is not sufficient for a complete desktop application.
+## Development and loading
 
-With the shared dependencies available, use the scripts in `package.json` from the app directory:
+You can edit and develop this module outside [puredesktop](https://puredesktop.ai) with your own tools, then register or install it in the desktop. Alternatively, work on your local version through purefactory or the app’s drawer agent. These are ways to develop the same app source; your changes stay local until you choose to share them.
 
-```sh
-npm run dev
-npm run build
-npm run typecheck
-npm test
-```
+### Prepare the development environment
 
-`dev` starts the development entry point; `build` prepares the app bundle. Tests and type checking require the same shared dependencies as the app. Host services such as file access and connected accounts must be provided by the suite.
+This repository currently references local `@purescience/platform-*` packages and, for some apps, build helpers from the parent suite. Provide the matching shared packages and build configuration when working with this source. For a new standalone app or an adaptation of this module, follow the published [app API guide](https://puredesktop.ai/docs/apps/) for the supported bridge and project setup.
+
+Run the scripts from this app’s `package.json` in that configured environment:
+
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Start the app’s development entry point. |
+| `npm run build` | Build the app bundle. |
+| `npm run typecheck` | Check the source’s TypeScript types. |
+| `npm test` | Run the app’s tests. |
+
+Use the package manager and installation procedure required by your development environment. The presence of these scripts does not mean this checkout includes every shared package needed to run them.
+
+### Load your local module
+
+1. Start the development server and note its local URL. Keep `plugin.json` consistent with the app’s entry point, identity, and required permissions.
+2. Use **File → Register App…** in a current version of [puredesktop](https://puredesktop.ai), enter the app URL and name, and select the permissions the module needs. Open it from **Browse Apps**.
+3. Continue editing with your external tools, then reload and test the app in the desktop. Browser development can exercise UI where the app supports it; the desktop supplies the file, account, and agent services needed by integrated features.
+4. For a packaged app, follow the platform packaging guide. The documented workflow uses **Share** from the project in purefactory to produce a `.pureapp` package and **File → Install App…** to load it on another installation.
+
+When making a fork that should coexist with the original, give it a distinct app identity and update its manifest consistently. See the [integration guide](https://puredesktop.ai/docs/apps/) for current registration and packaging details.
+
+### Change your local version inside the desktop
+
+In **purefactory**, open the app project and describe the feature or change you want. You can also ask the app’s **drawer agent** to change your local version. Be explicit that the request concerns the app’s source or behavior when that is your intent, rather than the open document. Review the diff, run appropriate checks, and reload the app. You can retain the result privately, publish a fork, or send a pull request upstream.
+
+## Source layout
+
+| Path | Purpose |
+| --- | --- |
+| [plugin.json](../plugin.json) | App identity, entry point, permissions, supported documents, and agent-tool declarations. |
+| [package.json](../package.json) | Dependencies and development, build, and validation scripts. |
+| [src/App.tsx](../src/App.tsx) | App entry and workspace composition. |
+| [src/components](../src/components) | Workspace views, panels, and controls. |
+| [src/hooks](../src/hooks) | Boot, state, and interaction hooks. |
+| [src/lib](../src/lib) | App data models, document handling, and domain logic. |
+| [src/agents](../src/agents) | Agent-tool declarations and handlers. |
+| [src/bridge](../src/bridge) | Integration with the desktop’s services. |
+| [agents.md](../agents.md) | Instructions and capabilities for the app’s agent. |
+| [docs](../docs) | Usage and technical documentation. |
+
+## Developer accounts and the marketplace
+
+[Create a developer account on puredesktop.ai](https://puredesktop.ai/developers) to take part in the developer community and submit apps for review. We welcome contributions to this app, forks that take it in a different direction, and entirely new apps to offer on [puredesktop](https://puredesktop.ai).
+
+We welcome **open-source and proprietary projects alike** to the [puredesktop](https://puredesktop.ai) marketplace. A marketplace with support for **paid apps is coming soon**, so developers will be able to charge for their apps if they choose. When distributing a fork, follow the licenses of the code and dependencies you use.
+
+For more information about developer accounts, app submissions, or the upcoming marketplace, contact [info@puredesktop.ai](mailto:info@puredesktop.ai).
 
 ## Contributing
 
-Anyone may modify and share this app under its applicable licenses. We welcome pull requests, bug reports, and documentation improvements. See [contribution guidance](../CONTRIBUTING.md), [the license](../LICENSE), and [third-party notices](../THIRD_PARTY_NOTICES.md).
+We welcome pull requests, bug reports, new features, and documentation improvements. You may modify and distribute this app under its applicable licenses. See [CONTRIBUTING.md](../CONTRIBUTING.md), [LICENSE](../LICENSE), and [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md).
