@@ -1,0 +1,34 @@
+{
+  "name": "@purescience/purebuzz",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@noble/curves": "^2.0.1",
+    "@purescience/platform-ui": "file:../../packages/ui",
+    "nostr-tools": "^2.10.4",
+    "qrcode": "^1.5.4",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "styled-components": "^6.1.18",
+    "@purescience/platform-bridge": "file:../../packages/bridge"
+  },
+  "devDependencies": {
+    "@swc/plugin-styled-components": "^12.9.0",
+    "@types/qrcode": "^1.5.6",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@vitejs/plugin-react-swc": "^3.9.0",
+    "happy-dom": "^17.4.6",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5",
+    "vitest": "^3.1.3"
+  },
+  "license": "MIT"
+}

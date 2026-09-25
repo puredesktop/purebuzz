@@ -1,0 +1,220 @@
+{
+  "id": "buzz",
+  "name": "Buzz",
+  "permissions": [
+    "network",
+    "settings",
+    "agents",
+    "filesystem"
+  ],
+  "entrypoint": {
+    "kind": "dev-url",
+    "url": "http://localhost:5390"
+  },
+  "app": {
+    "id": "plugin.buzz",
+    "slug": "buzz",
+    "name": "Buzz",
+    "navigationLabel": "Buzz",
+    "productName": "ps.buzz",
+    "kind": "desktop",
+    "description": "Team chat on a self-hosted Buzz (Nostr) relay \u2014 humans and agents as signed members. Option B pilot: native PureDesktop surface, Block's relay underneath.",
+    "agents": {
+      "tools": [
+        {
+          "name": "getBuzzContext",
+          "risk": "read",
+          "description": "Current Buzz state: connection status, relay, own identity (npub and display name), the active channel, and which channels have unread messages.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {}
+          },
+          "requiresApproval": false
+        },
+        {
+          "name": "listChannels",
+          "risk": "read",
+          "description": "List every channel and direct-message conversation: id, name, type (channel|dm), visibility (open|private), member count, and whether it has unread messages.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {}
+          },
+          "requiresApproval": false
+        },
+        {
+          "name": "readMessages",
+          "risk": "read",
+          "description": "Read recent messages from a channel or DM, oldest first: author display name, text, ISO timestamp, attachments by name, and reply references. Edits and deletions are applied for the channel currently open in the app; other channels return the raw history.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "channelId": {
+                "type": "string",
+                "description": "Channel id from listChannels. Defaults to the active channel."
+              },
+              "limit": {
+                "type": "number",
+                "description": "Maximum messages (default 50, newest kept)."
+              }
+            }
+          },
+          "requiresApproval": false
+        },
+        {
+          "name": "searchMessages",
+          "risk": "read",
+          "description": "Full-text search within one channel via the relay. Returns matching messages, newest first.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "query": {
+                "type": "string",
+                "description": "Search terms."
+              },
+              "channelId": {
+                "type": "string",
+                "description": "Channel id to search. Defaults to the active channel."
+              }
+            },
+            "required": [
+              "query"
+            ]
+          },
+          "requiresApproval": false
+        },
+        {
+          "name": "listMembers",
+          "risk": "read",
+          "description": "A channel's member roster: display name, npub, role, and whether they are online right now.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "channelId": {
+                "type": "string",
+                "description": "Channel id. Defaults to the active channel."
+              }
+            }
+          },
+          "requiresApproval": false
+        },
+        {
+          "name": "sendMessage",
+          "risk": "external",
+          "description": "Post a message to a channel or DM as the user. The message is signed with their identity and visible to every member \u2014 use exactly the text the user approved.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "channelId": {
+                "type": "string",
+                "description": "Channel id from listChannels. Defaults to the active channel."
+              },
+              "text": {
+                "type": "string",
+                "description": "Message text (markdown subset: links, bold, italic, code)."
+              }
+            },
+            "required": [
+              "text"
+            ]
+          },
+          "requiresApproval": true
+        },
+        {
+          "name": "sendDirectMessage",
+          "risk": "external",
+          "description": "Send a direct message to one person as the user, opening the DM channel first if it does not exist. The message is signed with the user's identity \u2014 use exactly the text the user approved.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "to": {
+                "type": "string",
+                "description": "Who to message: a display name (see listMembers), an npub, or a hex key."
+              },
+              "text": {
+                "type": "string",
+                "description": "Message text (markdown subset: links, bold, italic, code)."
+              }
+            },
+            "required": [
+              "to",
+              "text"
+            ]
+          },
+          "requiresApproval": true
+        },
+        {
+          "name": "latestMessages",
+          "risk": "read",
+          "description": "The newest messages, newest first \u2014 from one channel, from one person across every channel, or both. \"from\" accepts a display name, npub, or hex key.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "channelId": {
+                "type": "string",
+                "description": "Channel id. Defaults to the active channel; omit together with \"from\" to search a person across all channels."
+              },
+              "from": {
+                "type": "string",
+                "description": "Only messages by this person \u2014 display name, npub, or hex key."
+              },
+              "count": {
+                "type": "number",
+                "description": "How many (default 5, max 50)."
+              }
+            }
+          },
+          "requiresApproval": false
+        },
+        {
+          "name": "listMedia",
+          "risk": "read",
+          "description": "Files and images posted in a channel: url, mime type, author, timestamp, message id. Optionally filtered to one person (display name, npub, or hex key).",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "channelId": {
+                "type": "string",
+                "description": "Channel id. Defaults to the active channel."
+              },
+              "from": {
+                "type": "string",
+                "description": "Only media posted by this person."
+              },
+              "limit": {
+                "type": "number",
+                "description": "Maximum entries (default 25, newest kept)."
+              }
+            }
+          },
+          "requiresApproval": false
+        },
+        {
+          "name": "sendMediaFile",
+          "risk": "external",
+          "description": "Upload a local file to the relay media store and post it to a channel as the user, with an optional caption. Signed with their identity; images are re-encoded to strip metadata.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string",
+                "description": "Absolute path of the file to send (max 10MB)."
+              },
+              "channelId": {
+                "type": "string",
+                "description": "Channel id. Defaults to the active channel."
+              },
+              "caption": {
+                "type": "string",
+                "description": "Text to send with the file."
+              }
+            },
+            "required": [
+              "path"
+            ]
+          },
+          "requiresApproval": true
+        }
+      ]
+    }
+  }
+}

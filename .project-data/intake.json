@@ -1,0 +1,8 @@
+{
+  "appNames": [
+    "PureBuzz"
+  ],
+  "idea": "Adopt the existing PureBuzz built-in app for app-development work. PureBuzz is the suite's team chat over a self-hosted relay: channels, direct messages, identity-key encryption, and an agent that handles catch-up, search, and sending on the user's behalf.",
+  "questions": [],
+  "selectedAppName": "PureBuzz"
+}

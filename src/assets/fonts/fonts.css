@@ -1,0 +1,17 @@
+/* JetBrains Mono is the platform's mono face; this vendored copy (latin
+   subset) keeps it available in the Electron build without a CDN. The UI
+   and reading faces come from the platform stylesheet. */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('./jetbrains-mono.woff2') format('woff2');
+}
+
+/* The shell AppFrame wordmark reads --app-acc for the app-name accent; the
+   reskin's primary replaces the default. !important outranks the inline
+   variable the frame sets. */
+html {
+  --app-acc: #B2312A !important;
+}
