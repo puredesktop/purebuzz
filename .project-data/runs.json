@@ -8,5 +8,17 @@
       "b20bbe95-a28c-42b2-8a6b-e2f449442faf"
     ],
     "title": "Existing app baseline"
+  },
+  {
+    "createdAt": "2026-10-01T18:46:38.748Z",
+    "id": "c07d1115-9c00-41a3-8188-f6258b62513a",
+    "origin": "factory",
+    "request": "Implement this contribution in the current app version. Follow the repository instructions and keep changes focused.\n\nSee attachment sizes before sending\nShow filenames, file types and human-readable sizes on attachment previews before upload and in the conversation stream when metadata is available.\nRead the implementation brief: docs/contributions/attachment-size-labels.md",
+    "taskIds": [
+      "c07d1115-9c00-41a3-8188-f6258b62513a"
+    ],
+    "title": "Implement attachment size labels in previews and stream",
+    "devSessionId": "bbfc11f5-76d5-4ef1-bf10-864bc76b4ba9",
+    "devRequestId": "c07d1115-9c00-41a3-8188-f6258b62513a"
   }
 ]

@@ -6,5 +6,14 @@
     "status": "done",
     "details": "Existing app source at commit 249e38b7d96d03a9e163e5439ee1845b6cd336cf.",
     "commitHash": "6e11f4110b05646480f366c11eb4942ccac6beeb"
+  },
+  {
+    "id": "c07d1115-9c00-41a3-8188-f6258b62513a",
+    "title": "Implement attachment size labels in previews and stream",
+    "details": "Implement attachment metadata labels so pending and conversation attachments show filename, file type, and human-readable size when available, following repo instructions and the brief at docs/contributions/attachment-size-labels.md.",
+    "scope": "app",
+    "status": "running",
+    "devSessionId": "bbfc11f5-76d5-4ef1-bf10-864bc76b4ba9",
+    "devRequestId": "c07d1115-9c00-41a3-8188-f6258b62513a"
   }
 ]
