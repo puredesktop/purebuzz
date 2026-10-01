@@ -1,0 +1,12 @@
+[
+  {
+    "createdAt": "2026-10-01T18:46:32.594Z",
+    "id": "96a39690-71aa-426a-8955-f4d2a8ea4ba2",
+    "origin": "factory",
+    "request": "Initial build plan",
+    "taskIds": [
+      "b20bbe95-a28c-42b2-8a6b-e2f449442faf"
+    ],
+    "title": "Existing app baseline"
+  }
+]
