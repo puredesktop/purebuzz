@@ -16,5 +16,14 @@
     "devSessionId": "bbfc11f5-76d5-4ef1-bf10-864bc76b4ba9",
     "devRequestId": "c07d1115-9c00-41a3-8188-f6258b62513a",
     "commitHash": "e2f095a61af64e50fac2a26468119fdb79e052a8"
+  },
+  {
+    "id": "4973a44d-13c1-45c9-86ad-6b126987dece",
+    "title": "test pr",
+    "details": "Implement this contribution in the current app version. Follow the repository instructions and keep changes focused.\n\ntest pr\n\nnothing just a test, acknowledge success only",
+    "scope": "app",
+    "status": "done",
+    "devSessionId": "bbfc11f5-76d5-4ef1-bf10-864bc76b4ba9",
+    "devRequestId": "4973a44d-13c1-45c9-86ad-6b126987dece"
   }
 ]
