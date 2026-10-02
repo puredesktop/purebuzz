@@ -30,6 +30,7 @@ import { firstUrlOf, renderMessageText } from './lib/messageMarkdown'
 import { packInvite } from './lib/invites'
 import { LinkCard } from './components/LinkCard'
 import { replaceShortcodes, searchEmoji } from './lib/emoji'
+import { formatFileSize } from './lib/attachmentMetadata'
 
 /**
  * Option B in the flesh: a native PureDesktop surface over a Buzz relay.
@@ -904,12 +905,10 @@ const AttachmentImage = styled.img`
   max-width: min(420px, 100%);
   max-height: 320px;
   border-radius: 8px;
-  margin-top: 4px;
 `
 
 const AttachmentFile = styled.a`
   display: inline-block;
-  margin-top: 4px;
   padding: 6px 10px;
   border: 1px solid ${theme.border};
   border-radius: 6px;
@@ -920,6 +919,36 @@ const AttachmentFile = styled.a`
   &:hover {
     border-color: ${theme.primary};
   }
+`
+
+const AttachmentBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  max-width: 100%;
+  margin-top: 4px;
+`
+
+const AttachmentMetadataRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 3px 10px;
+  max-width: 100%;
+  font-size: 12px;
+  color: ${theme.subtle};
+`
+
+const AttachmentName = styled.span`
+  max-width: 100%;
+  color: ${theme.body};
+  font-weight: 600;
+  overflow-wrap: anywhere;
+`
+
+const AttachmentDetail = styled.span`
+  white-space: nowrap;
 `
 
 const HiddenFileInput = styled.input`
@@ -1287,14 +1316,41 @@ function initialsOf(name: string, pubkey: string): string {
  * One attachment, fetched with auth and rendered from a data: URL — the relay
  * serves media to members only, so the webview can never load it by URL.
  */
+function AttachmentMetadata({
+  label,
+  mime,
+  size,
+}: {
+  label: string
+  mime: string
+  size?: number
+}): ReactElement {
+  const readableSize = formatFileSize(size)
+  return (
+    <AttachmentMetadataRow
+      aria-label={`Attachment ${label}, type ${mime}${
+        readableSize ? `, size ${readableSize}` : ''
+      }`}
+    >
+      <AttachmentName title={label}>{label}</AttachmentName>
+      <AttachmentDetail>Type: {mime}</AttachmentDetail>
+      {readableSize && (
+        <AttachmentDetail>Size: {readableSize}</AttachmentDetail>
+      )}
+    </AttachmentMetadataRow>
+  )
+}
+
 function Attachment({
   media,
   label,
+  metadata,
   resolveMedia,
   onView,
 }: {
   media: MessageMedia
   label: string
+  metadata: ReactElement
   resolveMedia: (url: string) => Promise<string>
   onView: (dataUrl: string, label: string) => void
 }): ReactElement {
@@ -1314,22 +1370,50 @@ function Attachment({
     }
   }, [media.url, resolveMedia])
 
-  if (failed) return <AttachmentNote>attachment unavailable</AttachmentNote>
-  if (!dataUrl) return <AttachmentNote>loading {label}…</AttachmentNote>
+  if (!dataUrl && !failed) {
+    return (
+      <AttachmentBlock>
+        {metadata}
+        <AttachmentNote>loading attachment...</AttachmentNote>
+      </AttachmentBlock>
+    )
+  }
+  if (failed) {
+    return (
+      <AttachmentBlock>
+        {metadata}
+        <AttachmentNote>attachment unavailable</AttachmentNote>
+      </AttachmentBlock>
+    )
+  }
+  if (!dataUrl) {
+    return (
+      <AttachmentBlock>
+        {metadata}
+        <AttachmentNote>loading attachment...</AttachmentNote>
+      </AttachmentBlock>
+    )
+  }
   if (media.mime.startsWith('image/')) {
     return (
-      <AttachmentImage
-        src={dataUrl}
-        alt={label}
-        title="Click to view full size"
-        onClick={() => onView(dataUrl, label)}
-      />
+      <AttachmentBlock>
+        {metadata}
+        <AttachmentImage
+          src={dataUrl}
+          alt={label}
+          title="Click to view full size"
+          onClick={() => onView(dataUrl, label)}
+        />
+      </AttachmentBlock>
     )
   }
   return (
-    <AttachmentFile href={dataUrl} download={label}>
+    <AttachmentBlock>
+      {metadata}
+      <AttachmentFile href={dataUrl} download={label}>
       📄 {label}
-    </AttachmentFile>
+      </AttachmentFile>
+    </AttachmentBlock>
   )
 }
 
@@ -1590,6 +1674,13 @@ function MessageView({
             key={media.url}
             media={media}
             label={attachmentLabel(message.text, media.url)}
+            metadata={
+              <AttachmentMetadata
+                label={attachmentLabel(message.text, media.url)}
+                mime={media.mime}
+                size={media.size}
+              />
+            }
             resolveMedia={resolveMedia}
             onView={onViewImage}
           />
@@ -3065,7 +3156,8 @@ export function App(): ReactElement {
                       </FileExtTile>
                       <StagedFileName>{pendingFile.name}</StagedFileName>
                       <StagedFileMeta>
-                        {Math.max(1, Math.round(pendingFile.size / 1024))} KB ·
+                        Type: {pendingFile.type || 'application/octet-stream'} ·
+                        Size: {formatFileSize(pendingFile.size) ?? 'unavailable'} ·
                         sends with the message
                       </StagedFileMeta>
                       <PendingRemove

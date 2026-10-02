@@ -373,7 +373,20 @@ describe('attachments', () => {
     expect(verify(event)).toBe(true)
 
     const message = messageFromEvent(event)
-    expect(message?.media).toEqual([{ url: blob.url, mime: 'image/png' }])
+    expect(message?.media).toEqual([
+      { url: blob.url, mime: 'image/png', size: blob.size },
+    ])
+  })
+
+  it('keeps media usable when an older imeta tag has no size', () => {
+    const pair = generateKeypair()
+    const event = buildMessageEvent(pair, 'chan-1', '![file.txt](url)', [
+      ['imeta', 'url https://relay.example/file.txt', 'm text/plain'],
+    ])
+
+    expect(messageFromEvent(event)?.media).toEqual([
+      { url: 'https://relay.example/file.txt', mime: 'text/plain' },
+    ])
   })
 
   it('parses no media from a plain message', () => {
