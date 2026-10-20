@@ -38,6 +38,12 @@ function personRefList(pubkey: string, name?: string): string[] {
   return [npub, pubkey, name].flatMap(value => refsFor([['to', value], ['from', value]]))
 }
 
+/** Adds `@open`, the ref the layer marks when a write names no tagged element: the app's one main working surface. */
+export const withOpen = (refs?: AgentRefProps): AgentRefProps => ({
+  ...refs,
+  'data-agent-ref': `${refs?.['data-agent-ref'] ?? ''} @open`.trim(),
+})
+
 export const channelRefs = (id: string, name: string): AgentRefProps => props(channelRefList(id), name)
 
 /** A direct-message row: the channel, and the people in it (so messaging them by name or npub marks it). */
