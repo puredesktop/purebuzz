@@ -30,6 +30,7 @@ import { firstUrlOf, renderMessageText } from './lib/messageMarkdown'
 import { packInvite } from './lib/invites'
 import { LinkCard } from './components/LinkCard'
 import { replaceShortcodes, searchEmoji } from './lib/emoji'
+import { channelRefs, dmRefs, messageRefs, personRefs } from './lib/agentRefs'
 
 /**
  * Option B in the flesh: a native PureDesktop surface over a Buzz relay.
@@ -1543,7 +1544,10 @@ function MessageView({
     )
     .trim()
   return (
-    <MessageRow $mentioned={message.mentions.includes(myPubkey)}>
+    <MessageRow
+      $mentioned={message.mentions.includes(myPubkey)}
+      {...messageRefs(message.id, authorName)}
+    >
       <Gutter>
         {grouped ? (
           <GutterStamp>{time}</GutterStamp>
@@ -2206,6 +2210,7 @@ export function App(): ReactElement {
                 <ChannelButton
                   key={channel.id}
                   type="button"
+                  {...channelRefs(channel.id, `#${channel.name}`)}
                   data-active={channel.id === chat.activeChannelId ? '' : undefined}
                   onClick={() => chat.selectChannel(channel.id)}
                   onContextMenu={event => openRowMenu(channel.id, event)}
@@ -2240,6 +2245,7 @@ export function App(): ReactElement {
                 {knownPeople.map(person => (
                   <MentionRow
                     key={person.pubkey}
+                    {...personRefs(person.pubkey, person.name)}
                     type="button"
                     $active={false}
                     onClick={() => {
@@ -2275,6 +2281,11 @@ export function App(): ReactElement {
                 <ChannelButton
                   key={channel.id}
                   type="button"
+                  {...dmRefs(
+                    channel.id,
+                    label,
+                    others.map(pubkey => ({ pubkey, name: chat.nameFor(pubkey) })),
+                  )}
                   data-active={channel.id === chat.activeChannelId ? '' : undefined}
                   onClick={() => chat.selectChannel(channel.id)}
                   onContextMenu={event => openRowMenu(channel.id, event)}
@@ -2567,6 +2578,7 @@ export function App(): ReactElement {
                         return (
                           <MemberAvatar
                             key={member.pubkey}
+                            {...personRefs(member.pubkey, name)}
                             as="button"
                             type="button"
                             onContextMenu={(event: React.MouseEvent) => {
@@ -2747,6 +2759,7 @@ export function App(): ReactElement {
               )}
               <MessageScroll
                 ref={scrollRef}
+                {...(activeChannel ? channelRefs(activeChannel.id, activeChannel.name) : {})}
                 onScroll={event => {
                   const el = event.currentTarget
                   nearBottomRef.current =
