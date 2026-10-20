@@ -1,1 +1,29 @@
-[]
+[
+  {
+    "id": "b20bbe95-a28c-42b2-8a6b-e2f449442faf",
+    "title": "Existing app baseline",
+    "scope": "app",
+    "status": "done",
+    "details": "Existing app source at commit 249e38b7d96d03a9e163e5439ee1845b6cd336cf.",
+    "commitHash": "6e11f4110b05646480f366c11eb4942ccac6beeb"
+  },
+  {
+    "id": "c07d1115-9c00-41a3-8188-f6258b62513a",
+    "title": "Implement attachment size labels in previews and stream",
+    "details": "Implement attachment metadata labels so pending and conversation attachments show filename, file type, and human-readable size when available, following repo instructions and the brief at docs/contributions/attachment-size-labels.md.",
+    "scope": "app",
+    "status": "done",
+    "devSessionId": "bbfc11f5-76d5-4ef1-bf10-864bc76b4ba9",
+    "devRequestId": "c07d1115-9c00-41a3-8188-f6258b62513a",
+    "commitHash": "e2f095a61af64e50fac2a26468119fdb79e052a8"
+  },
+  {
+    "id": "4973a44d-13c1-45c9-86ad-6b126987dece",
+    "title": "test pr",
+    "details": "Implement this contribution in the current app version. Follow the repository instructions and keep changes focused.\n\ntest pr\n\nnothing just a test, acknowledge success only",
+    "scope": "app",
+    "status": "done",
+    "devSessionId": "bbfc11f5-76d5-4ef1-bf10-864bc76b4ba9",
+    "devRequestId": "4973a44d-13c1-45c9-86ad-6b126987dece"
+  }
+]

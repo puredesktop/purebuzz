@@ -269,6 +269,8 @@ export function channelFromMetadata(event: SignedEvent): BuzzChannel | null {
 export interface MessageMedia {
   url: string
   mime: string
+  /** Blob size from the NIP-92 imeta tag, when the sender included it. */
+  size?: number
 }
 
 export interface BuzzMessage {
@@ -327,6 +329,7 @@ function mediaFromTags(tags: string[][]): MessageMedia[] {
     if (tag[0] !== 'imeta') continue
     let url = ''
     let mime = ''
+    let size: number | undefined
     for (const field of tag.slice(1)) {
       const space = field.indexOf(' ')
       if (space <= 0) continue
@@ -334,8 +337,18 @@ function mediaFromTags(tags: string[][]): MessageMedia[] {
       const value = field.slice(space + 1)
       if (key === 'url') url = value
       if (key === 'm') mime = value
+      if (key === 'size') {
+        const parsed = Number(value)
+        if (Number.isFinite(parsed) && parsed >= 0) size = parsed
+      }
     }
-    if (url) media.push({ url, mime: mime || 'application/octet-stream' })
+    if (url) {
+      media.push({
+        url,
+        mime: mime || 'application/octet-stream',
+        ...(size === undefined ? {} : { size }),
+      })
+    }
   }
   return media
 }
