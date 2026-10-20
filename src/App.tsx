@@ -30,7 +30,7 @@ import { firstUrlOf, renderMessageText } from './lib/messageMarkdown'
 import { packInvite } from './lib/invites'
 import { LinkCard } from './components/LinkCard'
 import { replaceShortcodes, searchEmoji } from './lib/emoji'
-import { channelRefs, dmRefs, messageRefs, personRefs } from './lib/agentRefs'
+import { channelRefs, dmRefs, messageRefs, personRefs, withOpen } from './lib/agentRefs'
 
 /**
  * Option B in the flesh: a native PureDesktop surface over a Buzz relay.
@@ -2759,7 +2759,7 @@ export function App(): ReactElement {
               )}
               <MessageScroll
                 ref={scrollRef}
-                {...(activeChannel ? channelRefs(activeChannel.id, activeChannel.name) : {})}
+                {...withOpen(activeChannel ? channelRefs(activeChannel.id, activeChannel.name) : undefined)}
                 onScroll={event => {
                   const el = event.currentTarget
                   nearBottomRef.current =
