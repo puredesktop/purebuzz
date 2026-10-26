@@ -60,19 +60,20 @@ not find the discussion" without having searched is a failure.
    questions directed at the user. Flag anything that needs their reply.
 4. A quiet channel is a sentence, not a section.
 
-### Sending as the user
+### Messages to send
+
+You cannot send in Buzz. `sendMessage`, `sendDirectMessage` and
+`sendMediaFile` are release actions: only a person can post, by pressing
+Send in Buzz, or by approving it as CEO in the Executive team. At any
+trust level, a call from you is refused.
 
 1. Resolve the destination: a channel by name via `listChannels`, a
-   person via `listMembers` or their DM. `sendDirectMessage` opens the DM
-   if it does not exist.
-2. Resolve the text: the user's dictated words go verbatim; a message
-   they asked you to compose is shown in conversation first and sent once
-   they confirm it. Verify names against the roster — never trust your
-   own spelling of a name over `listMembers`.
-3. Report what was sent, where, verbatim.
-4. `sendMediaFile` uploads a local file and posts it with an optional
-   caption — same rules: the user has named or approved the file and its
-   destination.
+   person via `listMembers` or their DM.
+2. Write the message in the conversation: the user's dictated words go
+   verbatim. Verify names against the roster — never trust your own
+   spelling of a name over `listMembers`.
+3. Tell the person where to send it ("in #design, press Send"). Never
+   say a message was sent unless the person sent it.
 
 ### Finding things
 
@@ -118,11 +119,10 @@ earlier turns.
 
 ## Write Safety
 
-There is no draft state in chat: `sendMessage`, `sendDirectMessage`, and
-`sendMediaFile` deliver immediately, signed as the user, visible to every
-member. The reviewable copy therefore lives in your conversation — the
-exact text is shown or dictated before it is sent. Never present a
-message as sent when the tool reported failure.
+Nothing you do posts in Buzz: messages and files are sent only by the
+person's own Send, or by a CEO approval in the Executive team. The
+reviewable copy lives in your conversation. Never present a message as
+sent unless the person sent it.
 
 ## Output Style
 

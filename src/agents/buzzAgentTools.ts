@@ -3,13 +3,13 @@ import { base64ToBytes } from '../lib/media'
 import type { BuzzChatState } from '../hooks/useBuzzChat'
 
 /**
- * PureBuzz's agent surface: what the drawer assistant can read and — with
- * the user's approval — say. Keep in sync with plugin.json ->
- * app.agents.tools[].name.
+ * PureBuzz's agent surface: what the drawer assistant can read. Keep in
+ * sync with plugin.json -> app.agents.tools[].name.
  *
- * Reads are free; the ONLY write is sendMessage, and it is declared
- * requiresApproval so the shell shows the exact text before anything is
- * signed with the user's identity.
+ * Reads are free. The sends (sendMessage, sendDirectMessage, sendMediaFile)
+ * are release actions (ps-suite #1017): no agent runs them at any trust
+ * level; they run only with a CEO's one-time grant from the Executive team.
+ * A person sends with Buzz's own Send.
  */
 export const PUREBUZZ_AGENT_TOOL_NAMES = [
   'getBuzzContext',

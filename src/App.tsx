@@ -32,6 +32,7 @@ import { LinkCard } from './components/LinkCard'
 import { replaceShortcodes, searchEmoji } from './lib/emoji'
 import { formatFileSize } from './lib/attachmentMetadata'
 import { channelRefs, dmRefs, messageRefs, personRefs, withOpen } from './lib/agentRefs'
+import { isPersonGesture } from '@purescience/platform-ui/release/gesture'
 
 /**
  * Option B in the flesh: a native PureDesktop surface over a Buzz relay.
@@ -2138,6 +2139,8 @@ export function App(): ReactElement {
 
   const onSend = (event: FormEvent): void => {
     event.preventDefault()
+    // Only a person's own Send or Enter posts (#1017): a scripted submit is ignored.
+    if (!isPersonGesture(event)) return
     const text = draft
     if (editing) {
       const target = editing
@@ -3304,7 +3307,7 @@ export function App(): ReactElement {
                     <ComposerHint>
                       Enter sends · Shift+Enter new line
                     </ComposerHint>
-                    <SendButton type="submit" disabled={uploading}>
+                    <SendButton type="submit" data-release="sendMessage" disabled={uploading}>
                       {uploading ? 'Sending…' : editing ? 'Save' : 'Send'}
                     </SendButton>
                   </ComposerToolbar>
