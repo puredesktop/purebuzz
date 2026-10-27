@@ -99,8 +99,9 @@
         },
         {
           "name": "sendMessage",
-          "risk": "external",
-          "description": "Post a message to a channel or DM as the user. The message is signed with their identity and visible to every member \u2014 use exactly the text the user approved.",
+          "releaseButton": "Send",
+          "risk": "release",
+          "description": "Post a message to a channel or DM as the user. The message is signed with their identity and visible to every member \u2014 use exactly the text the user approved. A release action: only a person can post, by pressing Send in Buzz, or by approving it as CEO in the Executive team. An agent cannot call this at any trust level; write the text in the conversation for the person to send.",
           "inputSchema": {
             "type": "object",
             "properties": {
@@ -121,8 +122,9 @@
         },
         {
           "name": "sendDirectMessage",
-          "risk": "external",
-          "description": "Send a direct message to one person as the user, opening the DM channel first if it does not exist. The message is signed with the user's identity \u2014 use exactly the text the user approved.",
+          "releaseButton": "Send",
+          "risk": "release",
+          "description": "Send a direct message to one person as the user, opening the DM channel first if it does not exist. The message is signed with the user's identity \u2014 use exactly the text the user approved. A release action: only a person can post, by pressing Send in Buzz, or by approving it as CEO in the Executive team. An agent cannot call this at any trust level; write the text in the conversation for the person to send.",
           "inputSchema": {
             "type": "object",
             "properties": {
@@ -190,8 +192,9 @@
         },
         {
           "name": "sendMediaFile",
-          "risk": "external",
-          "description": "Upload a local file to the relay media store and post it to a channel as the user, with an optional caption. Signed with their identity; images are re-encoded to strip metadata.",
+          "releaseButton": "Send",
+          "risk": "release",
+          "description": "Upload a local file to the relay media store and post it to a channel as the user, with an optional caption. Signed with their identity; images are re-encoded to strip metadata. A release action: only a person can post, by pressing Send in Buzz, or by approving it as CEO in the Executive team. An agent cannot call this at any trust level; write the text in the conversation for the person to send.",
           "inputSchema": {
             "type": "object",
             "properties": {
