@@ -16,6 +16,9 @@ import {
   type MessageMedia,
 } from './lib/buzzProtocol'
 import { useBuzzChat, type ReactionEntry } from './hooks/useBuzzChat'
+import { useCopyRole } from './hooks/useCopyRole'
+import { CompactBuzz } from './components/CompactBuzz'
+import './compact-in-room.css'
 import { avatarColorOf, theme } from './theme'
 
 /** Marks an element as platform chrome; typed loosely because attrs rejects data-* literals. */
@@ -1759,7 +1762,8 @@ function MessageView({
 
 export function App(): ReactElement {
   const { error: bridgeError } = usePlatformBridge()
-  const chat = useBuzzChat()
+  const copy = useCopyRole()
+  const chat = useBuzzChat({ second: copy.second, known: copy.known })
   useBuzzAgentTools(chat)
   const [draft, setDraft] = useState('')
   const [newChannel, setNewChannel] = useState('')
@@ -2228,8 +2232,9 @@ export function App(): ReactElement {
   }
 
   return (
-    <AppFrame>
-      <Layout>
+    <AppFrame {...(copy.compact ? { 'data-compact-room': '' } : undefined)}>
+      {copy.compact ? <CompactBuzz chat={chat} /> : null}
+      <Layout {...(copy.compact ? { 'data-compact': 'hide' } : undefined)}>
         <Sidebar>
           <SideTop>
             <WordmarkRow>

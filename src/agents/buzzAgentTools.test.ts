@@ -19,6 +19,8 @@ const OTHER = 'b'.repeat(64)
 function fakeChat(overrides: Partial<BuzzChatState> = {}): BuzzChatState {
   return {
     status: 'ready',
+    noIdentity: false,
+    recent: [],
     keyStorage: { kind: 'stored' },
     statusDetail: null,
     relayUrl: 'wss://relay.example',
