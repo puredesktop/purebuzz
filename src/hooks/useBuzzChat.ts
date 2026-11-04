@@ -91,8 +91,8 @@ const DEFAULT_RELAY = 'ws://localhost:3000'
  * generates a key and stores it; a key left in localStorage by the first
  * day of the pilot is migrated in rather than abandoned.
  */
-async function loadIdentityAndSettings(): Promise<{
-  keypair: BuzzKeypair
+async function loadIdentityAndSettings(mayMakeIdentity: boolean): Promise<{
+  keypair: BuzzKeypair | null
   relayUrl: string
   keyStorage: KeyStorageState
   lastRead: Record<string, number>
@@ -113,7 +113,7 @@ async function loadIdentityAndSettings(): Promise<{
   const relayUrl = isValidRelayUrl(saved) ? saved : DEFAULT_RELAY
 
   let secret = await readSecretKey().catch(() => null)
-  if (!secret) secret = await migrateLocalStorageKey().catch(() => null)
+  if (!secret && mayMakeIdentity) secret = await migrateLocalStorageKey().catch(() => null)
   // Running under vite outside the shell there is no keystore to use, so the
   // key lives in localStorage in the clear. That is an acceptable dev
   // convenience and an unacceptable thing to leave unsaid.
@@ -136,6 +136,8 @@ async function loadIdentityAndSettings(): Promise<{
       // corrupt key — fall through to a fresh one
     }
   }
+  // A second running copy never makes an identity: two copies on a first run would be two people.
+  if (!mayMakeIdentity) return { keypair: null, relayUrl, keyStorage: stored, lastRead, muted, hiddenDms, linkPreviews, lastChannel }
   const fresh = generateKeypair()
   try {
     await storeSecretKey(fresh.secretKey)
@@ -183,6 +185,10 @@ export interface ReactionEntry {
 
 export interface BuzzChatState {
   status: ConnectionStatus
+  /** A second running copy found no identity yet, and leaves making one to the whole app. */
+  noIdentity: boolean
+  /** A second copy only: the newest messages across every conversation, newest first. */
+  recent: BuzzMessage[]
   /** Whether the identity key is safely stored, and why not when it is not. */
   keyStorage: KeyStorageState
   statusDetail: string | null
@@ -315,17 +321,25 @@ export interface BuzzChatState {
   importIdentity: (input: string) => Promise<string | null>
 }
 
-export function useBuzzChat(): BuzzChatState {
+/** How often a second copy looks at what has been read, in the whole app or anywhere else. */
+const SECOND_COPY_LOOKS_MS = 30_000
+/** The newest messages across every conversation a second copy keeps for a glance. */
+const RECENT_KEPT = 30
+
+export function useBuzzChat({ second = false, known = true }: { second?: boolean; known?: boolean } = {}): BuzzChatState {
   const [keypair, setKeypair] = useState<BuzzKeypair | null>(null)
+  const [noIdentity, setNoIdentity] = useState(false)
+  const [recent, setRecent] = useState<BuzzMessage[]>([])
   const [keyStorage, setKeyStorage] = useState<KeyStorageState>({
     kind: 'stored',
   })
   const [relayUrl, setRelayUrlState] = useState(DEFAULT_RELAY)
 
-  // Boot: settings and identity arrive over the bridge before connecting.
+  // Boot: settings and identity arrive over the bridge before connecting, and only once this copy knows which it is.
   useEffect(() => {
+    if (!known) return undefined
     let cancelled = false
-    void loadIdentityAndSettings().then(
+    void loadIdentityAndSettings(!second).then(
       ({
         keypair: pair,
         relayUrl: url,
@@ -339,18 +353,20 @@ export function useBuzzChat(): BuzzChatState {
         if (cancelled) return
         setRelayUrlState(url)
         setKeypair(pair)
+        setNoIdentity(!pair)
         setKeyStorage(storage)
         setLastRead(read)
         setMuted(new Set(mutedList))
         setHiddenDms(new Set(hiddenList))
         setLinkPreviews(previews)
-        pendingRestoreRef.current = last
+        // Opening a conversation counts it as read: a second copy waits to be asked.
+        pendingRestoreRef.current = second ? null : last
       },
     )
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [known, second])
   const [status, setStatus] = useState<ConnectionStatus>('connecting')
   const [statusDetail, setStatusDetail] = useState<string | null>(null)
   const [channels, setChannels] = useState<BuzzChannel[]>([])
@@ -521,9 +537,16 @@ export function useBuzzChat(): BuzzChatState {
           if (!current.has(message.channelId)) return current
           const next = new Set(current)
           next.delete(message.channelId)
-          void updateBuzzSettings({ hiddenDms: [...next] }).catch(() => undefined)
+          // the whole app keeps this; a second copy only shows it
+          if (!second) void updateBuzzSettings({ hiddenDms: [...next] }).catch(() => undefined)
           return next
         })
+        if (second) {
+          setRecent(current => {
+            if (current.some(entry => entry.id === message.id)) return current
+            return [...current, message].sort((a, b) => b.createdAt - a.createdAt).slice(0, RECENT_KEPT)
+          })
+        }
         setActivityTimes(current => {
           const seen = current[message.channelId] ?? []
           if (seen.includes(message.createdAt)) {
@@ -603,7 +626,20 @@ export function useBuzzChat(): BuzzChatState {
       connection.close()
       connectionRef.current = null
     }
-  }, [absorbChannelMetadata, refreshChannels, keypair, relayUrl])
+  }, [absorbChannelMetadata, refreshChannels, keypair, relayUrl, second])
+
+  // What has been read is the whole app's to say: a second copy keeps looking, so its counts come down with the person's reading.
+  useEffect(() => {
+    if (!second || !known) return undefined
+    const look = (): void => {
+      void fetchBuzzSettings().then(settings => setLastRead(current => {
+        const read = settings.lastRead ?? {}
+        return Object.entries(read).some(([id, at]) => at > (current[id] ?? 0)) ? { ...current, ...read } : current
+      })).catch(() => undefined)
+    }
+    const timer = window.setInterval(look, SECOND_COPY_LOOKS_MS)
+    return () => window.clearInterval(timer)
+  }, [second, known])
 
   // Messages and their reactions for the active channel: history + live.
   useEffect(() => {
@@ -1111,7 +1147,8 @@ export function useBuzzChat(): BuzzChatState {
 
   // Announce ourselves online once authed, and keep the 180s Redis TTL fed.
   useEffect(() => {
-    if (status !== 'ready' || !keypair) return undefined
+    // A second copy never posts by being open, and saying someone is online is a post.
+    if (status !== 'ready' || !keypair || second) return undefined
     const beat = (): void => {
       void connectionRef.current?.publish(buildPresenceEvent(keypair))
     }
@@ -1120,7 +1157,7 @@ export function useBuzzChat(): BuzzChatState {
     return () => {
       window.clearInterval(timer)
     }
-  }, [status, keypair])
+  }, [status, keypair, second])
 
   // Live deltas only arrive while we watch, so seed the active channel's
   // roster with a queried snapshot of who is online right now.
@@ -1537,6 +1574,8 @@ export function useBuzzChat(): BuzzChatState {
     sendTo,
     channelMembers,
     presence,
+    noIdentity,
+    recent,
     unread,
     markRead,
     muted,

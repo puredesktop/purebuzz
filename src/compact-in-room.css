@@ -1,0 +1,123 @@
+/* Buzz held inside a page (useCopyRole): what is unread, and the latest messages. The frame carries data-compact-room only
+   then, and every rule here starts from it. The whole app is hidden, not removed, so it stays connected and its tools work. */
+
+[data-compact-room] {
+  background: #ffffff;
+  color: #1b1d21;
+}
+[data-compact-room] > header,
+[data-compact-room] [data-compact='hide'] {
+  display: none !important;
+}
+html[data-held-in-room]:has([data-compact-room]),
+html[data-held-in-room]:has([data-compact-room]) body {
+  background: #ffffff;
+}
+[data-compact-room] .buzz-held {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 12px 16px 16px;
+  box-sizing: border-box;
+  font-size: 13px;
+  line-height: 1.45;
+}
+[data-compact-room] .buzz-held-facts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #dde1e7;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+[data-compact-room] .buzz-held-facts small {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 400;
+  color: #565a62;
+}
+[data-compact-room] .buzz-held-facts button {
+  height: 28px;
+  padding: 0 11px;
+  border: 1px solid #cdd1d7;
+  border-radius: 3px;
+  background: #ffffff;
+  color: #1b1d21;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+[data-compact-room] .buzz-held-facts button:hover {
+  background: #f5f6f8;
+}
+[data-compact-room] .buzz-held h2 {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #565a62;
+}
+[data-compact-room] .buzz-held ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid #dde1e7;
+}
+[data-compact-room] .buzz-held li {
+  border-bottom: 1px solid #dde1e7;
+}
+[data-compact-room] .buzz-held-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  padding: 6px 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+}
+[data-compact-room] .buzz-held-row:hover {
+  background: #f5f6f8;
+}
+[data-compact-room] .buzz-held-row b {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+[data-compact-room] .buzz-held-message {
+  padding: 6px 0;
+}
+[data-compact-room] .buzz-held-message > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  font-size: 12px;
+  color: #565a62;
+}
+[data-compact-room] .buzz-held-message b {
+  font-weight: 600;
+  color: #1b1d21;
+}
+[data-compact-room] .buzz-held-message time {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
+[data-compact-room] .buzz-held-message p {
+  margin: 1px 0 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+[data-compact-room] .buzz-held-note {
+  margin: 0;
+  font-size: 12px;
+  color: #565a62;
+}
