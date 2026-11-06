@@ -1,9 +1,18 @@
+/* Follows the desk's theme: each colour is light-dark(its light value, its dark partner), the dark ones the held greys
+   of docs/held-apps.md. A light theme leaves the colour scheme as it was; a dark one says dark, and parts that asked
+   for light take --held-scheme instead. */
+[data-compact-room]:is([data-platform-theme='dark'] *),
+html[data-held-in-room]:has([data-compact-room])[data-platform-theme='dark'] {
+  color-scheme: dark;
+  --held-scheme: dark;
+}
+
 /* Buzz held inside a page (useCopyRole): what is unread, and the latest messages. The frame carries data-compact-room only
    then, and every rule here starts from it. The whole app is hidden, not removed, so it stays connected and its tools work. */
 
 [data-compact-room] {
-  background: #ffffff;
-  color: #1b1d21;
+  background: light-dark(#ffffff, #1c1c1c);
+  color: light-dark(#1b1d21, #ededed);
 }
 [data-compact-room] > header,
 [data-compact-room] [data-compact='hide'] {
@@ -11,7 +20,7 @@
 }
 html[data-held-in-room]:has([data-compact-room]),
 html[data-held-in-room]:has([data-compact-room]) body {
-  background: #ffffff;
+  background: light-dark(#ffffff, #1c1c1c);
 }
 [data-compact-room] .buzz-held {
   display: flex;
@@ -31,7 +40,7 @@ html[data-held-in-room]:has([data-compact-room]) body {
   align-items: baseline;
   gap: 4px 12px;
   padding-bottom: 10px;
-  border-bottom: 1px solid #dde1e7;
+  border-bottom: 1px solid light-dark(#dde1e7, #3a3a3a);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
@@ -39,37 +48,37 @@ html[data-held-in-room]:has([data-compact-room]) body {
   margin-left: auto;
   font-size: 12px;
   font-weight: 400;
-  color: #565a62;
+  color: light-dark(#565a62, #bdbdbd);
 }
 [data-compact-room] .buzz-held-facts button {
   height: 28px;
   padding: 0 11px;
-  border: 1px solid #cdd1d7;
+  border: 1px solid light-dark(#cdd1d7, #4a4a4a);
   border-radius: 3px;
-  background: #ffffff;
-  color: #1b1d21;
+  background: light-dark(#ffffff, #1c1c1c);
+  color: light-dark(#1b1d21, #ededed);
   font: inherit;
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
 }
 [data-compact-room] .buzz-held-facts button:hover {
-  background: #f5f6f8;
+  background: light-dark(#f5f6f8, #272727);
 }
 [data-compact-room] .buzz-held h2 {
   margin: 0 0 4px;
   font-size: 12px;
   font-weight: 500;
-  color: #565a62;
+  color: light-dark(#565a62, #bdbdbd);
 }
 [data-compact-room] .buzz-held ul {
   margin: 0;
   padding: 0;
   list-style: none;
-  border-top: 1px solid #dde1e7;
+  border-top: 1px solid light-dark(#dde1e7, #3a3a3a);
 }
 [data-compact-room] .buzz-held li {
-  border-bottom: 1px solid #dde1e7;
+  border-bottom: 1px solid light-dark(#dde1e7, #3a3a3a);
 }
 [data-compact-room] .buzz-held-row {
   display: flex;
@@ -86,7 +95,7 @@ html[data-held-in-room]:has([data-compact-room]) body {
   cursor: pointer;
 }
 [data-compact-room] .buzz-held-row:hover {
-  background: #f5f6f8;
+  background: light-dark(#f5f6f8, #272727);
 }
 [data-compact-room] .buzz-held-row b {
   font-weight: 600;
@@ -101,11 +110,11 @@ html[data-held-in-room]:has([data-compact-room]) body {
   align-items: baseline;
   gap: 2px 8px;
   font-size: 12px;
-  color: #565a62;
+  color: light-dark(#565a62, #bdbdbd);
 }
 [data-compact-room] .buzz-held-message b {
   font-weight: 600;
-  color: #1b1d21;
+  color: light-dark(#1b1d21, #ededed);
 }
 [data-compact-room] .buzz-held-message time {
   margin-left: auto;
@@ -119,5 +128,5 @@ html[data-held-in-room]:has([data-compact-room]) body {
 [data-compact-room] .buzz-held-note {
   margin: 0;
   font-size: 12px;
-  color: #565a62;
+  color: light-dark(#565a62, #bdbdbd);
 }
