@@ -223,8 +223,9 @@ const RowHash = styled.span`
   font-weight: 400;
 `
 
-const RowName = styled.span`
+const RowName = styled.span<{ $unread?: boolean }>`
   flex: 1;
+  font-weight: ${({ $unread }) => ($unread ? 700 : 'inherit')};
   text-align: left;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -233,27 +234,27 @@ const RowName = styled.span`
 
 const PrivateTag = styled.span.attrs(chrome('meta'))``
 
-const UnreadPill = styled.span`
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
-  border-radius: 2px;
-  background: ${theme.primary};
-  color: ${theme.onAccent};
-  font-size: 11px;
+/* Unread messages say what they are in words ("2 new"), in ink beside a bold name: no coloured box to decode. */
+const UnreadCount = styled.span.attrs(chrome('meta'))`
+  flex: none;
+  color: ${theme.ink};
   font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  white-space: nowrap;
 `
 
-const DmInitials = styled.span`
+function Unread({ count }: { count: number }): ReactElement {
+  return <UnreadCount aria-label={`${count} unread`}>{count} new</UnreadCount>
+}
+
+/* A person's initials on their own colour, the same colour as beside their messages. */
+const DmInitials = styled.span<{ $bg?: string }>`
+  position: relative;
   width: 20px;
   height: 20px;
   flex: 0 0 20px;
   border-radius: 2px;
-  background: ${theme.dmAvatarBg};
-  color: ${theme.dmAvatarFg};
+  background: ${({ $bg }) => $bg ?? theme.dmAvatarBg};
+  color: ${({ $bg }) => ($bg ? '#ffffff' : theme.dmAvatarFg)};
   font-size: 9px;
   font-weight: 600;
   display: flex;
@@ -261,11 +262,16 @@ const DmInitials = styled.span`
   justify-content: center;
 `
 
-const PresenceDot = styled.span<{ $online: boolean }>`
-  width: 6px;
-  height: 6px;
-  border-radius: 2px;
-  background: ${({ $online }) => ($online ? theme.online : theme.away)};
+/* Online or not, as a small square on the corner of the person's initials: green when online, grey when not. */
+const PresenceMark = styled.span<{ $online: boolean }>`
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 7px;
+  height: 7px;
+  border-radius: 1px;
+  border: 1.5px solid ${theme.white};
+  background: ${({ $online }) => ($online ? theme.online : theme.ghost)};
 `
 
 const NewChannelForm = styled.form`
@@ -395,16 +401,21 @@ const MembersPop = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 10px 12px;
+  padding: 6px 10px;
   border: 1px solid ${theme.border};
   border-radius: var(--pure-chrome-radius, 3px);
   background: ${theme.raised};
 `
 
+/* One line: the count, each member as their colour and name, adding someone, closing. */
 const MembersPopHead = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 14px;
+  min-height: 30px;
+
+  > :last-child { margin-left: auto; }
+  > [data-chrome='section-label'] { margin: 0; padding: 0; line-height: 1; }
 `
 
 const HeaderTop = styled.div`
@@ -601,49 +612,46 @@ const MemberStrip = styled.div`
   min-width: 0;
 `
 
+/* Adding someone is quiet grey words, like adding a value inside a field. */
 const AddPersonButton = styled.button`
-  width: 28px;
   height: 28px;
-  border-radius: 50%;
-  border: 1px dashed ${theme.border};
+  padding: 0 4px;
+  border: 0;
   background: transparent;
   color: ${theme.subtle};
-  font: 600 14px/1 ${theme.sans};
+  font: 500 12.5px/1 ${theme.sans};
+  white-space: nowrap;
   cursor: pointer;
 
   &:hover {
-    color: ${theme.body};
-    border-color: ${theme.primary};
+    color: ${theme.ink};
   }
 `
 
+/* A member: their initials on their own colour, with a small online mark, and their name. Clicking arms removal; a second
+   click removes (owners and admins). */
 const MemberAvatar = styled.span<{ $online: boolean; $armed?: boolean }>`
-  position: relative;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: ${({ $armed }) => ($armed ? `2px solid ${theme.primary}` : '0')};
-  padding: 0;
-  cursor: pointer;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  background: ${theme.hoverFill};
-  color: ${({ $armed }) => ($armed ? theme.primary : theme.body)};
-  font: 600 11px/1 ${theme.sans};
-  text-transform: uppercase;
-  opacity: ${({ $online }) => ($online ? 1 : 0.55)};
+  gap: 7px;
+  height: 28px;
+  max-width: 200px;
+  padding: 0 8px 0 4px;
+  border: 1px solid ${({ $armed }) => ($armed ? 'var(--p-failed-text)' : 'transparent')};
+  border-radius: var(--pure-chrome-radius, 3px);
+  background: transparent;
+  color: ${({ $armed, $online }) => ($armed ? 'var(--p-failed-text)' : $online ? theme.ink : theme.body)};
+  font: 500 13px/1 ${theme.sans};
+  cursor: pointer;
 
-  &::after {
-    content: '';
-    position: absolute;
-    right: -1px;
-    bottom: -1px;
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    border: 2px solid ${theme.white};
-    background: ${({ $online }) => ($online ? theme.online : theme.ghost)};
+  &:hover {
+    background: ${theme.hoverFill};
+  }
+
+  > span:last-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 `
 
@@ -2320,11 +2328,11 @@ export function App(): ReactElement {
                   onContextMenu={event => openRowMenu(channel.id, event)}
                 >
                   <RowHash>#</RowHash>
-                  <RowName>{channel.name}</RowName>
+                  <RowName $unread={(chat.unread[channel.id] ?? 0) > 0}>{channel.name}</RowName>
                   {channel.visibility === 'private' &&
                     !chat.unread[channel.id] && <PrivateTag>private</PrivateTag>}
                   {(chat.unread[channel.id] ?? 0) > 0 && (
-                    <UnreadPill>{chat.unread[channel.id]}</UnreadPill>
+                    <Unread count={chat.unread[channel.id] ?? 0} />
                   )}
                 </ChannelButton>
               ))
@@ -2357,16 +2365,19 @@ export function App(): ReactElement {
                       messagePerson(person.pubkey)
                     }}
                   >
-                    <DmInitials>
+                    <DmInitials
+                      $bg={avatarColorOf(person.pubkey, chat.publicKey)}
+                      title={chat.presence[person.pubkey] === true ? 'Online' : 'Not online'}
+                    >
                       {initialsOf(
                         person.name.includes('…') ? '' : person.name,
                         person.pubkey,
                       )}
+                      <PresenceMark
+                        $online={chat.presence[person.pubkey] === true}
+                      />
                     </DmInitials>
                     <RowName>{person.name}</RowName>
-                    <PresenceDot
-                      $online={chat.presence[person.pubkey] === true}
-                    />
                   </MentionRow>
                 ))}
               </DmPickerList>
@@ -2394,16 +2405,19 @@ export function App(): ReactElement {
                   onClick={() => chat.selectChannel(channel.id)}
                   onContextMenu={event => openRowMenu(channel.id, event)}
                 >
-                  <DmInitials>
+                  <DmInitials
+                    $bg={avatarColorOf(others[0] ?? chat.publicKey, chat.publicKey)}
+                    title={online ? 'Online' : 'Not online'}
+                  >
                     {initialsOf(
                       label === 'just you' ? '' : label,
                       others[0] ?? channel.id,
                     )}
+                    <PresenceMark $online={online} />
                   </DmInitials>
-                  <RowName>{label}</RowName>
-                  <PresenceDot $online={online} />
+                  <RowName $unread={(chat.unread[channel.id] ?? 0) > 0}>{label}</RowName>
                   {(chat.unread[channel.id] ?? 0) > 0 && (
-                    <UnreadPill>{chat.unread[channel.id]}</UnreadPill>
+                    <Unread count={chat.unread[channel.id] ?? 0} />
                   )}
                 </ChannelButton>
               )
@@ -2661,17 +2675,6 @@ export function App(): ReactElement {
                         {(chat.channelMembers[chat.activeChannelId] ?? [])
                           .length}
                       </SectionLabel>
-                      <PendingRemove
-                        type="button"
-                        aria-label="Close members"
-                        onClick={() => {
-                          setShowMembers(false)
-                          setAddingPerson(false)
-                        }}
-                      >
-                        ✕
-                      </PendingRemove>
-                    </MembersPopHead>
                   <MemberStrip>
                     {(chat.channelMembers[chat.activeChannelId] ?? []).map(
                       member => {
@@ -2732,7 +2735,11 @@ export function App(): ReactElement {
                                 .then(error => setSendError(error))
                             }}
                           >
-                            {armed ? '✕' : initialsOf(name, member.pubkey)}
+                            <DmInitials $bg={avatarColorOf(member.pubkey, chat.publicKey)}>
+                              {armed ? '✕' : initialsOf(name, member.pubkey)}
+                              <PresenceMark $online={online} />
+                            </DmInitials>
+                            <span>{armed ? `Remove ${name}?` : isSelf ? `${name} (you)` : name}</span>
                           </MemberAvatar>
                         )
                       },
@@ -2747,10 +2754,21 @@ export function App(): ReactElement {
                       }
                       onClick={() => setAddingPerson(current => !current)}
                     >
-                      +
+                      + Add person
                     </AddPersonButton>
                     )}
                   </MemberStrip>
+                      <PendingRemove
+                        type="button"
+                        aria-label="Close members"
+                        onClick={() => {
+                          setShowMembers(false)
+                          setAddingPerson(false)
+                        }}
+                      >
+                        ✕
+                      </PendingRemove>
+                    </MembersPopHead>
                 {addingPerson && (
                   <HeaderForm
                     onSubmit={event => {
