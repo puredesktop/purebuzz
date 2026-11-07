@@ -8,7 +8,7 @@ import {
 } from '../lib/linkPreview'
 
 /**
- * The link preview card: a 4px primary bar, host line, title, description,
+ * The link preview card: a hairline box with the host line, title, description,
  * optional og:image thumbnail. Three states — pending (host line only, no
  * shimmer), loaded, failed (host + path, no thumbnail) — and the whole card
  * is one anchor.
@@ -19,7 +19,7 @@ const Card = styled.a`
   margin-top: 9px;
   max-width: 460px;
   border: 1px solid ${theme.border};
-  border-radius: 9px;
+  border-radius: var(--pure-chrome-radius, 3px);
   overflow: hidden;
   background: ${theme.white};
   text-decoration: none;
@@ -29,12 +29,6 @@ const Card = styled.a`
     border-color: ${theme.cardHoverBorder};
     text-decoration: none;
   }
-`
-
-const Bar = styled.div`
-  width: 4px;
-  flex: 0 0 4px;
-  background: ${theme.primary};
 `
 
 const Body = styled.div`
@@ -50,7 +44,7 @@ const HostLine = styled.div`
   display: flex;
   align-items: center;
   gap: 7px;
-  font-family: ${theme.mono};
+  font-family: ${theme.sans};
   font-size: 10.5px;
   color: ${theme.subtle};
   overflow: hidden;
@@ -117,7 +111,6 @@ export function LinkCard({ url }: { url: string }): ReactElement | null {
 
   return (
     <Card href={url} target="_blank" rel="noreferrer noopener">
-      <Bar />
       <Body>
         <HostLine>
           <Favicon>{mark}</Favicon>

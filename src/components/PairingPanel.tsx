@@ -31,7 +31,7 @@ const Panel = styled.div`
 const QrImage = styled.img`
   width: 220px;
   height: 220px;
-  border-radius: 8px;
+  border-radius: var(--pure-chrome-radius, 3px);
   background: white;
   padding: 8px;
 `
@@ -55,7 +55,7 @@ const Row = styled.div`
 
 const Action = styled.button<{ $primary?: boolean }>`
   padding: 7px 14px;
-  border-radius: 6px;
+  border-radius: var(--pure-chrome-radius, 3px);
   border: 1px solid
     ${({ $primary }) =>
       $primary ? 'var(--pure-chrome-accent)' : 'var(--platform-colors-border)'};

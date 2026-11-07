@@ -29,7 +29,7 @@ const Card = styled.div`
   position: fixed;
   width: 226px;
   border: 1px solid ${theme.border};
-  border-radius: 9px;
+  border-radius: var(--pure-chrome-radius, 3px);
   background: ${theme.white};
   box-shadow: ${theme.shadowMenu};
   overflow: hidden;
@@ -70,11 +70,11 @@ const ItemButton = styled.button<{ $destructive?: boolean }>`
   height: 30px;
   padding: 0 8px;
   border: none;
-  border-radius: 5px;
+  border-radius: var(--pure-chrome-radius, 3px);
   background: transparent;
   font-family: inherit;
   font-size: 13px;
-  color: ${({ $destructive }) => ($destructive ? theme.primary : theme.body)};
+  color: ${({ $destructive }) => ($destructive ? 'var(--p-failed-text)' : theme.body)};
   cursor: pointer;
   text-align: left;
 
@@ -93,7 +93,7 @@ const ItemButton = styled.button<{ $destructive?: boolean }>`
   }
 
   span:last-child {
-    font-family: ${theme.mono};
+    font-family: ${theme.sans};
     font-size: 10.5px;
     color: ${theme.faintest};
   }

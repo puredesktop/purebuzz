@@ -80,7 +80,7 @@ const WordmarkRow = styled.div`
 const OwnAvatar = styled.div`
   width: 26px;
   height: 26px;
-  border-radius: 99px;
+  border-radius: 2px;
   background: ${theme.ink};
   color: ${theme.onAccent};
   display: flex;
@@ -111,7 +111,7 @@ const PlusButton = styled.button`
   width: 20px;
   height: 20px;
   border: none;
-  border-radius: 5px;
+  border-radius: var(--pure-chrome-radius, 3px);
   background: transparent;
   color: ${theme.muted};
   font-size: 15px;
@@ -141,7 +141,7 @@ const DmPickerList = styled.div`
   margin: 0 4px 8px;
   padding: 4px;
   border: 1px solid ${theme.border};
-  border-radius: 8px;
+  border-radius: var(--pure-chrome-radius, 3px);
   background: ${theme.white};
 `
 
@@ -164,7 +164,7 @@ const RelayLabelRow = styled.div`
 const RelayDot = styled.span<{ $state: string }>`
   width: 6px;
   height: 6px;
-  border-radius: 99px;
+  border-radius: 2px;
   background: ${({ $state }) =>
     $state === 'ready' ? theme.online : theme.away};
 `
@@ -188,7 +188,7 @@ const FooterButton = styled.button`
   height: var(--pure-chrome-field-height);
   padding: 0 10px;
   border: 1px solid ${theme.inputBorder};
-  border-radius: 6px;
+  border-radius: var(--pure-chrome-radius, 3px);
   background: ${theme.white};
   font-size: 12px;
   font-weight: 500;
@@ -237,7 +237,7 @@ const UnreadPill = styled.span`
   min-width: 18px;
   height: 18px;
   padding: 0 5px;
-  border-radius: 99px;
+  border-radius: 2px;
   background: ${theme.primary};
   color: ${theme.onAccent};
   font-size: 11px;
@@ -251,7 +251,7 @@ const DmInitials = styled.span`
   width: 20px;
   height: 20px;
   flex: 0 0 20px;
-  border-radius: 99px;
+  border-radius: 2px;
   background: ${theme.dmAvatarBg};
   color: ${theme.dmAvatarFg};
   font-size: 9px;
@@ -264,7 +264,7 @@ const DmInitials = styled.span`
 const PresenceDot = styled.span<{ $online: boolean }>`
   width: 6px;
   height: 6px;
-  border-radius: 99px;
+  border-radius: 2px;
   background: ${({ $online }) => ($online ? theme.online : theme.away)};
 `
 
@@ -283,7 +283,7 @@ const TextInput = styled.input.attrs(chrome('field'))`
 const QuietButton = styled.button`
   padding: 6px 10px;
   border: 1px solid ${theme.border};
-  border-radius: 6px;
+  border-radius: var(--pure-chrome-radius, 3px);
   background: transparent;
   color: ${theme.subtle};
   font-size: 12px;
@@ -306,10 +306,10 @@ const MintedCode = styled.button`
   gap: 6px;
   padding: 6px 9px;
   border: 1px dashed ${theme.border};
-  border-radius: 6px;
+  border-radius: var(--pure-chrome-radius, 3px);
   background: transparent;
   color: ${theme.body};
-  font: 500 12px/1.2 ${theme.mono};
+  font: 500 12px/1.2 ${theme.sans};
   cursor: pointer;
   text-align: left;
 
@@ -352,8 +352,8 @@ const PrivateChip = styled.span`
   height: 19px;
   padding: 0 7px;
   border: 1px solid ${theme.border};
-  border-radius: 5px;
-  font-family: ${theme.mono};
+  border-radius: var(--pure-chrome-radius, 3px);
+  font-family: ${theme.sans};
   font-size: var(--pure-chrome-label-size);
   letter-spacing: var(--pure-chrome-label-tracking);
   text-transform: uppercase;
@@ -379,7 +379,7 @@ const HeaderButton = styled.button`
   height: 28px;
   padding: 0 11px;
   border: 1px solid ${theme.border};
-  border-radius: 6px;
+  border-radius: var(--pure-chrome-radius, 3px);
   background: ${theme.white};
   font-size: 13px;
   font-weight: 500;
@@ -397,7 +397,7 @@ const MembersPop = styled.div`
   gap: 8px;
   padding: 10px 12px;
   border: 1px solid ${theme.border};
-  border-radius: 9px;
+  border-radius: var(--pure-chrome-radius, 3px);
   background: ${theme.raised};
 `
 
@@ -464,7 +464,7 @@ const ResultCard = styled.button`
   padding: 13px 14px;
   margin: 0 18px 8px;
   border: 1px solid ${theme.border};
-  border-radius: 8px;
+  border-radius: var(--pure-chrome-radius, 3px);
   background: ${theme.white};
   font-family: inherit;
   cursor: pointer;
@@ -517,7 +517,7 @@ const EmptyChannel = styled.div`
 const EmptyTile = styled.div`
   width: 40px;
   height: 40px;
-  border-radius: 9px;
+  border-radius: var(--pure-chrome-radius, 3px);
   background: ${theme.hoverFill};
   color: ${theme.faint};
   display: flex;
@@ -565,7 +565,7 @@ const JoinIdentityRow = styled.div`
 const TtlSelect = styled.select`
   padding: 5px 4px;
   border: 1px solid ${theme.border};
-  border-radius: 6px;
+  border-radius: var(--pure-chrome-radius, 3px);
   background: transparent;
   color: ${theme.subtle};
   font-size: 12px;
@@ -659,7 +659,7 @@ const LoadOlder = styled.button`
   align-self: center;
   padding: 4px 12px;
   border: 1px solid ${theme.border};
-  border-radius: 12px;
+  border-radius: var(--pure-chrome-radius, 3px);
   background: transparent;
   color: ${theme.subtle};
   font-size: 12px;
@@ -687,9 +687,9 @@ const MessageRow = styled.div<{ $mentioned?: boolean }>`
   gap: 10px;
   padding: 9px 18px 9px 12px;
   background: ${({ $mentioned }) =>
-    $mentioned ? 'color-mix(in oklab, var(--pure-chrome-accent) 6%, transparent)' : 'transparent'};
+    $mentioned ? 'var(--p-chosen)' : 'transparent'};
   box-shadow: ${({ $mentioned }) =>
-    $mentioned ? `inset 2px 0 0 ${theme.primary}` : 'none'};
+    $mentioned ? 'var(--p-chosen-edge)' : 'none'};
 
   &:hover {
     background: ${theme.hoverRow};
@@ -714,7 +714,7 @@ const Gutter = styled.div`
 const Avatar = styled.div<{ $bg: string }>`
   width: 28px;
   height: 28px;
-  border-radius: 7px;
+  border-radius: var(--pure-chrome-radius, 3px);
   background: ${({ $bg }) => $bg};
   color: #ffffff; /* fixed saturated tile, readable in both themes */
   display: flex;
@@ -747,7 +747,7 @@ const ActionBar = styled.div`
   gap: 1px;
   padding: 2px;
   border: 1px solid ${theme.border};
-  border-radius: 8px;
+  border-radius: var(--pure-chrome-radius, 3px);
   background: ${theme.white};
   box-shadow: ${theme.shadowActionBar};
   z-index: 2;
@@ -757,7 +757,7 @@ const ActionIcon = styled.button`
   width: 26px;
   height: 26px;
   border: none;
-  border-radius: 5px;
+  border-radius: var(--pure-chrome-radius, 3px);
   background: transparent;
   font-size: 13px;
   cursor: pointer;
@@ -771,7 +771,7 @@ const ActionText = styled.button`
   height: 26px;
   padding: 0 9px;
   border: none;
-  border-radius: 5px;
+  border-radius: var(--pure-chrome-radius, 3px);
   background: transparent;
   font-size: 12px;
   font-weight: 500;
@@ -827,8 +827,9 @@ const ReplyRef = styled.div`
   align-items: center;
   gap: 6px;
   margin-bottom: 4px;
-  padding-left: 9px;
-  border-left: 2px solid ${theme.border};
+  padding: 2px 8px;
+  border: 1px solid ${theme.border};
+  border-radius: var(--pure-chrome-radius, 3px);
   font-size: 12.5px;
   color: ${theme.subtle};
   overflow: hidden;
@@ -851,20 +852,23 @@ const MessageText = styled.div`
   text-wrap: pretty;
 
   a {
-    color: ${theme.primary};
+    color: ${theme.ink};
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
   }
 
   code {
     padding: 1px 4px;
-    border-radius: 4px;
+    border-radius: var(--pure-chrome-radius, 3px);
     background: ${theme.hoverFill};
-    font: 500 12px/1.4 ${theme.mono};
+    font: 500 12px/1.4 ${theme.sans};
   }
 
   pre {
     margin: 4px 0;
     padding: 8px 10px;
-    border-radius: 6px;
+    border-radius: var(--pure-chrome-radius, 3px);
     background: ${theme.hoverFill};
     overflow-x: auto;
     white-space: pre;
@@ -876,9 +880,10 @@ const MessageText = styled.div`
   }
 
   .mention {
-    color: ${theme.primary};
-    background: ${theme.primaryTint};
-    border-radius: 4px;
+    color: ${theme.ink};
+    background: var(--p-chosen);
+    box-shadow: var(--p-chosen-edge);
+    border-radius: var(--pure-chrome-radius, 3px);
     padding: 0 3px;
     font-weight: 500;
   }
@@ -898,7 +903,7 @@ const Lightbox = styled.div`
   img {
     max-width: 92vw;
     max-height: 92vh;
-    border-radius: 8px;
+    border-radius: var(--pure-chrome-radius, 3px);
     box-shadow: ${theme.shadowMenu};
   }
 `
@@ -909,14 +914,14 @@ const AttachmentImage = styled.img`
   display: block;
   max-width: min(420px, 100%);
   max-height: 320px;
-  border-radius: 8px;
+  border-radius: var(--pure-chrome-radius, 3px);
 `
 
 const AttachmentFile = styled.a`
   display: inline-block;
   padding: 6px 10px;
   border: 1px solid ${theme.border};
-  border-radius: 6px;
+  border-radius: var(--pure-chrome-radius, 3px);
   color: ${theme.body};
   font-size: 13px;
   text-decoration: none;
@@ -968,7 +973,7 @@ const PendingAttachment = styled.span`
   max-width: 22ch;
   padding: 6px 9px;
   border: 1px dashed ${theme.border};
-  border-radius: 6px;
+  border-radius: var(--pure-chrome-radius, 3px);
   color: ${theme.body};
   font-size: 12px;
   white-space: nowrap;
@@ -1011,7 +1016,7 @@ const ReplyBanner = styled.div`
   padding: 8px 12px;
   border: 1px solid ${theme.border};
   border-bottom: none;
-  border-radius: 9px 9px 0 0;
+  border-radius: 3px 3px 0 0;
   background: ${theme.raised};
   font-size: 12.5px;
   color: ${theme.muted};
@@ -1033,7 +1038,7 @@ const ReplyBannerSnippet = styled.span`
 const ComposerBox = styled.div<{ $joined: boolean }>`
   position: relative;
   border: 1px solid ${theme.composerBorder};
-  border-radius: ${({ $joined }) => ($joined ? '0 0 9px 9px' : '9px')};
+  border-radius: ${({ $joined }) => ($joined ? '0 0 3px 3px' : '3px')};
   background: ${theme.white};
   box-shadow: ${theme.shadowComposer};
 `
@@ -1061,7 +1066,7 @@ const MentionPop = styled.div`
   left: 0;
   width: 290px;
   border: 1px solid ${theme.border};
-  border-radius: 9px;
+  border-radius: var(--pure-chrome-radius, 3px);
   background: ${theme.white};
   box-shadow: ${theme.shadowPopover};
   padding: 6px;
@@ -1080,7 +1085,7 @@ const MentionRow = styled.button<{ $active: boolean }>`
   height: 32px;
   padding: 0 8px;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--pure-chrome-radius, 3px);
   font-family: inherit;
   font-size: 13px;
   font-weight: 500;
@@ -1121,7 +1126,7 @@ const SendButton = styled.button`
   height: var(--pure-chrome-control-height);
   padding: 0 16px;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--pure-chrome-radius, 3px);
   background: ${theme.primary};
   color: ${theme.onAccent};
   font-size: 13px;
@@ -1146,19 +1151,19 @@ const StagedFile = styled.div`
   margin: 10px 10px 0;
   padding: 9px 11px;
   border: 1px solid ${theme.border};
-  border-radius: 7px;
+  border-radius: var(--pure-chrome-radius, 3px);
   background: ${theme.raised};
 `
 
 const FileExtTile = styled.div`
   width: 28px;
   height: 28px;
-  border-radius: 6px;
+  border-radius: var(--pure-chrome-radius, 3px);
   background: ${theme.tile};
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: ${theme.mono};
+  font-family: ${theme.sans};
   font-size: 9px;
   color: ${theme.muted};
 `
@@ -1192,7 +1197,7 @@ const StatusBar = styled.footer`
   padding: 6px 14px;
   border-top: 1px solid ${theme.border};
   background: var(--pure-chrome-bar);
-  font: 500 var(--pure-chrome-meta-size) / 1.4 ${theme.mono};
+  font: 500 var(--pure-chrome-meta-size) / 1.4 ${theme.sans};
   color: ${theme.subtle};
 `
 
@@ -1217,7 +1222,7 @@ const IdentityInput = styled.input`
   width: 14ch;
   padding: 2px 6px;
   border: 1px solid transparent;
-  border-radius: 4px;
+  border-radius: var(--pure-chrome-radius, 3px);
   background: transparent;
   color: ${theme.body};
   font: inherit;
@@ -1238,7 +1243,7 @@ const IdentityInput = styled.input`
 const KeyChip = styled.button`
   padding: 2px 6px;
   border: 1px solid transparent;
-  border-radius: 4px;
+  border-radius: var(--pure-chrome-radius, 3px);
   background: transparent;
   color: ${theme.subtle};
   font: inherit;
@@ -1283,7 +1288,7 @@ const KeyWarning = styled.div`
   gap: 6px;
   padding: 6px 10px;
   border: 1px solid ${theme.away};
-  border-radius: 6px;
+  border-radius: var(--pure-chrome-radius, 3px);
   background: ${theme.primaryTint};
   color: ${theme.body};
   font-size: 12px;
@@ -1441,7 +1446,7 @@ const PickerPanel = styled.div`
   margin: 0 16px 6px;
   padding: 8px;
   border: 1px solid ${theme.border};
-  border-radius: 8px;
+  border-radius: var(--pure-chrome-radius, 3px);
   background: ${theme.sidebar};
 `
 
@@ -1464,7 +1469,7 @@ const PickerGrid = styled.div`
     font-size: 19px;
     line-height: 1;
     padding: 4px;
-    border-radius: 6px;
+    border-radius: var(--pure-chrome-radius, 3px);
     cursor: pointer;
 
     &:hover {
@@ -1532,7 +1537,7 @@ const ReactionChip = styled.button<{ $mine: boolean }>`
   gap: 5px;
   height: 24px;
   padding: 0 8px;
-  border-radius: 99px;
+  border-radius: 2px;
   cursor: pointer;
   font-family: inherit;
   border: 1px solid ${({ $mine }) => ($mine ? theme.primary : theme.border)};
@@ -1546,7 +1551,7 @@ const ReactionChip = styled.button<{ $mine: boolean }>`
 `
 
 const ReactionCount = styled.span`
-  font-family: ${theme.mono};
+  font-family: ${theme.sans};
   font-size: 11px;
 `
 
