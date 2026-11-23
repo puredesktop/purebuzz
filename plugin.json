@@ -18,23 +18,141 @@
     "navigationLabel": "Buzz",
     "productName": "ps.buzz",
     "kind": "desktop",
-    "description": "Team chat on a self-hosted Buzz (Nostr) relay \u2014 humans and agents as signed members. Option B pilot: native PureDesktop surface, Block's relay underneath.",
+    "description": "Team chat on a self-hosted Buzz (Nostr) relay — humans and agents as signed members. Option B pilot: native PureDesktop surface, Block's relay underneath.",
     "agents": {
       "tools": [
         {
-          "name": "getBuzzContext",
+          "name": "fn_catchUpBriefing",
           "risk": "read",
-          "description": "Current Buzz state: connection status, relay, own identity (npub and display name), the active channel, and which channels have unread messages.",
+          "description": "Compile a complete Buzz catch-up briefing in one call: relay connection status, user identity, full channel and DM inventory with unread and muted counts, and recent messages across unread channels (or specified channels) with mentions, authors, and activity summaries. Prefer this over chaining getBuzzContext, listChannels, and repeated readMessages calls.",
           "inputSchema": {
             "type": "object",
-            "properties": {}
+            "properties": {
+              "channelIds": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Optional list of specific channel ids, channel names, or DM names to include. Omit to automatically catch up on all unread channels (falling back to the active channel if nothing is unread)."
+              },
+              "messagesPerChannel": {
+                "type": "number",
+                "description": "Maximum recent messages to fetch per channel (default 20, max 100)."
+              },
+              "maxChannels": {
+                "type": "number",
+                "description": "Maximum channels to fetch message histories for in one call (default 8, max 20)."
+              },
+              "includeMuted": {
+                "type": "boolean",
+                "description": "Include muted channels during automatic unread catch-up (default false)."
+              },
+              "includeQuietChannels": {
+                "type": "boolean",
+                "description": "When fewer than maxChannels are unread, also fetch recent messages from quiet non-muted channels (default false)."
+              }
+            }
           },
           "requiresApproval": false
         },
         {
-          "name": "listChannels",
+          "name": "fn_channelSnapshot",
           "risk": "read",
-          "description": "List every channel and direct-message conversation: id, name, type (channel|dm), visibility (open|private), member count, and whether it has unread messages.",
+          "description": "Inspect a Buzz channel or direct-message conversation in one call (resolved by channel id, channel name, or DM participant name): channel metadata, member roster with live online presence, recent messages with active edit/delete overlays and reactions, and shared media attachments.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "channel": {
+                "type": "string",
+                "description": "Channel id, channel name (with or without leading \"#\"), or DM participant display name. Defaults to the active channel."
+              },
+              "messageLimit": {
+                "type": "number",
+                "description": "Maximum recent messages to return, oldest first (default 40, max 200)."
+              },
+              "mediaLimit": {
+                "type": "number",
+                "description": "Maximum recent media attachments to return (default 15, max 50; set 0 to omit media)."
+              },
+              "includeOfflineMembers": {
+                "type": "boolean",
+                "description": "Include offline members in the roster listing (default true; false returns online members only)."
+              }
+            }
+          },
+          "requiresApproval": false
+        },
+        {
+          "name": "fn_personActivityDossier",
+          "risk": "read",
+          "description": "Build a complete Buzz activity dossier for one person (resolved by display name, npub, or hex key): profile identity, live online presence, shared channels and roles, existing DM status and recent DM messages, cross-channel recent messages, and shared media attachments.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "person": {
+                "type": "string",
+                "description": "Person to inspect: display name (case-insensitive), npub, or 64-char hex pubkey."
+              },
+              "messageLimit": {
+                "type": "number",
+                "description": "Maximum cross-channel recent messages by this person (default 15, max 50)."
+              },
+              "includeDmContext": {
+                "type": "boolean",
+                "description": "Include recent messages from the existing 1:1 DM with this person if one exists (default true)."
+              },
+              "dmMessageLimit": {
+                "type": "number",
+                "description": "Maximum recent messages to include from the 1:1 DM (default 15, max 50)."
+              },
+              "includeMedia": {
+                "type": "boolean",
+                "description": "Include media attachments shared by this person across returned messages (default true)."
+              }
+            },
+            "required": [
+              "person"
+            ]
+          },
+          "requiresApproval": false
+        },
+        {
+          "name": "fn_searchBuzzTopics",
+          "risk": "read",
+          "description": "Search across every Buzz channel and DM (or a named subset of channels) in one call, optionally filtered to one author, returning matching messages grouped by channel with channel display names, match counts, timestamps, and author summaries.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "query": {
+                "type": "string",
+                "description": "Full-text search terms to look up across the relay."
+              },
+              "channels": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Optional subset of channel ids, channel names, or DM names to search. Omit to search every channel the user can read."
+              },
+              "from": {
+                "type": "string",
+                "description": "Optional author filter: display name, npub, or hex pubkey."
+              },
+              "limit": {
+                "type": "number",
+                "description": "Maximum total matching messages returned, newest first (default 30, max 100)."
+              }
+            },
+            "required": [
+              "query"
+            ]
+          },
+          "requiresApproval": false
+        },
+        {
+          "name": "getBuzzContext",
+          "risk": "read",
+          "description": "Current Buzz state: connection status, relay, own identity (npub and display name), the active channel, and which channels have unread messages.",
           "inputSchema": {
             "type": "object",
             "properties": {}
@@ -61,47 +179,9 @@
           "requiresApproval": false
         },
         {
-          "name": "searchMessages",
-          "risk": "read",
-          "description": "Full-text search within one channel via the relay. Returns matching messages, newest first.",
-          "inputSchema": {
-            "type": "object",
-            "properties": {
-              "query": {
-                "type": "string",
-                "description": "Search terms."
-              },
-              "channelId": {
-                "type": "string",
-                "description": "Channel id to search. Defaults to the active channel."
-              }
-            },
-            "required": [
-              "query"
-            ]
-          },
-          "requiresApproval": false
-        },
-        {
-          "name": "listMembers",
-          "risk": "read",
-          "description": "A channel's member roster: display name, npub, role, and whether they are online right now.",
-          "inputSchema": {
-            "type": "object",
-            "properties": {
-              "channelId": {
-                "type": "string",
-                "description": "Channel id. Defaults to the active channel."
-              }
-            }
-          },
-          "requiresApproval": false
-        },
-        {
           "name": "sendMessage",
-          "releaseButton": "Send",
           "risk": "release",
-          "description": "Post a message to a channel or DM as the user. The message is signed with their identity and visible to every member \u2014 use exactly the text the user approved. A release action: only a person can post, by pressing Send in Buzz, or by approving it as CEO in the Executive team. An agent cannot call this at any trust level; write the text in the conversation for the person to send.",
+          "description": "Post a message to a channel or DM as the user. The message is signed with their identity and visible to every member — use exactly the text the user approved. A release action: only a person can post, by pressing Send in Buzz, or by approving it as CEO in the Executive team. An agent cannot call this at any trust level; write the text in the conversation for the person to send.",
           "inputSchema": {
             "type": "object",
             "properties": {
@@ -118,13 +198,13 @@
               "text"
             ]
           },
-          "requiresApproval": true
+          "requiresApproval": true,
+          "releaseButton": "Send"
         },
         {
           "name": "sendDirectMessage",
-          "releaseButton": "Send",
           "risk": "release",
-          "description": "Send a direct message to one person as the user, opening the DM channel first if it does not exist. The message is signed with the user's identity \u2014 use exactly the text the user approved. A release action: only a person can post, by pressing Send in Buzz, or by approving it as CEO in the Executive team. An agent cannot call this at any trust level; write the text in the conversation for the person to send.",
+          "description": "Send a direct message to one person as the user, opening the DM channel first if it does not exist. The message is signed with the user's identity — use exactly the text the user approved. A release action: only a person can post, by pressing Send in Buzz, or by approving it as CEO in the Executive team. An agent cannot call this at any trust level; write the text in the conversation for the person to send.",
           "inputSchema": {
             "type": "object",
             "properties": {
@@ -142,59 +222,13 @@
               "text"
             ]
           },
-          "requiresApproval": true
-        },
-        {
-          "name": "latestMessages",
-          "risk": "read",
-          "description": "The newest messages, newest first \u2014 from one channel, from one person across every channel, or both. \"from\" accepts a display name, npub, or hex key.",
-          "inputSchema": {
-            "type": "object",
-            "properties": {
-              "channelId": {
-                "type": "string",
-                "description": "Channel id. Defaults to the active channel; omit together with \"from\" to search a person across all channels."
-              },
-              "from": {
-                "type": "string",
-                "description": "Only messages by this person \u2014 display name, npub, or hex key."
-              },
-              "count": {
-                "type": "number",
-                "description": "How many (default 5, max 50)."
-              }
-            }
-          },
-          "requiresApproval": false
-        },
-        {
-          "name": "listMedia",
-          "risk": "read",
-          "description": "Files and images posted in a channel: url, mime type, author, timestamp, message id. Optionally filtered to one person (display name, npub, or hex key).",
-          "inputSchema": {
-            "type": "object",
-            "properties": {
-              "channelId": {
-                "type": "string",
-                "description": "Channel id. Defaults to the active channel."
-              },
-              "from": {
-                "type": "string",
-                "description": "Only media posted by this person."
-              },
-              "limit": {
-                "type": "number",
-                "description": "Maximum entries (default 25, newest kept)."
-              }
-            }
-          },
-          "requiresApproval": false
+          "requiresApproval": true,
+          "releaseButton": "Send"
         },
         {
           "name": "sendMediaFile",
-          "releaseButton": "Send",
           "risk": "release",
-          "description": "Upload a local file to the relay media store and post it to a channel as the user, with an optional caption. Signed with their identity; images are re-encoded to strip metadata. A release action: only a person can post, by pressing Send in Buzz, or by approving it as CEO in the Executive team. An agent cannot call this at any trust level; write the text in the conversation for the person to send.",
+          "description": "Upload a local file to the relay media store and post it to a channel as the user, with an optional caption. Call getBuzzContext first to verify relay connection and channel state. Signed with their identity; images are re-encoded to strip metadata. A release action: only a person can post, by pressing Send in Buzz, or by approving it as CEO in the Executive team. An agent cannot call this at any trust level; write the text in the conversation for the person to send.",
           "inputSchema": {
             "type": "object",
             "properties": {
@@ -215,7 +249,89 @@
               "path"
             ]
           },
-          "requiresApproval": true
+          "requiresApproval": true,
+          "releaseButton": "Send"
+        },
+        {
+          "name": "discoverAppTools",
+          "risk": "read",
+          "requiresApproval": false,
+          "description": "Discover Buzz's extended specialist tools (5 tools across channels, media, messages, people, search) and composite functions (4 workflows). Prefer calling exposed composite functions and core tools first; use discoverAppTools when an edge case needs a specialist tool, then call it via callExtendedReadTool (for read-only tools) or callExtendedTool (for mutating tools).",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "query": {
+                "type": "string",
+                "description": "Optional keywords describing the capability you need (e.g. \"channels\", \"media\", \"messages\", \"people\", \"search\")."
+              },
+              "category": {
+                "type": "string",
+                "description": "Optional category filter (channels, media, messages, people, search, or \"all\")."
+              },
+              "names": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Optional exact tool names to fetch full JSON input schemas for."
+              },
+              "includeFunctions": {
+                "type": "boolean",
+                "description": "Include already-exposed composite functions and core tools in the listing (default false: searches extended tools first)."
+              }
+            }
+          }
+        },
+        {
+          "name": "callExtendedReadTool",
+          "risk": "read",
+          "requiresApproval": false,
+          "description": "Call one of Buzz's read-only extended specialist tools discovered via discoverAppTools (categories: channels, media, messages, people, search). Strictly refuses mutating, destructive, external, or release tools.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "tool": {
+                "type": "string",
+                "description": "Exact name of a read-only extended tool from discoverAppTools."
+              },
+              "arguments": {
+                "type": "object",
+                "description": "Arguments object matching the tool’s inputSchema."
+              }
+            },
+            "required": [
+              "tool"
+            ]
+          }
+        },
+        {
+          "name": "callExtendedTool",
+          "risk": "write",
+          "requiresApproval": true,
+          "riskWhen": {
+            "confirmDestructive": "destructive"
+          },
+          "description": "Call one of Buzz's mutating extended specialist tools discovered via discoverAppTools (categories: channels, media, messages, people, search). For destructive tools, set confirmDestructive: true after checking with the user. Strictly refuses read-only tools (use callExtendedReadTool), external tools, permanent-delete tools, and release tools (call sendMessage / sendDirectMessage / sendMediaFile directly).",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "tool": {
+                "type": "string",
+                "description": "Exact name of a mutating extended tool from discoverAppTools."
+              },
+              "arguments": {
+                "type": "object",
+                "description": "Arguments object matching the tool’s inputSchema."
+              },
+              "confirmDestructive": {
+                "type": "boolean",
+                "description": "Required (true) when calling an extended tool marked risk: \"destructive\"."
+              }
+            },
+            "required": [
+              "tool"
+            ]
+          }
         }
       ]
     }
